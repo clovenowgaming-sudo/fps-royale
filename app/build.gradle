@@ -1,0 +1,63 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+android {
+    namespace 'com.vinz.fpsroyale'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.vinz.fpsroyale"
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+        ndk {
+            // no native code needed; libGDX ships prebuilt natives for these ABIs
+            abiFilters "armeabi-v7a", "arm64-v8a"
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    packagingOptions {
+        exclude 'META-INF/robovm/ios/robovm.xml'
+        pickFirst '**/*.so'
+    }
+
+    sourceSets {
+        main {
+            assets.srcDirs = ['src/main/assets']
+            jniLibs.srcDirs = ['src/main/jniLibs']
+        }
+    }
+}
+
+def gdxVersion = "1.12.1"
+def gdxGltfVersion = "2.3.1"
+
+dependencies {
+    implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
+    implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
+    // glTF / GLB runtime loader + PBR shaders for libGDX
+    implementation "com.github.mgsx-dev.gdx-gltf:gltf:$gdxGltfVersion"
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.23"
+}
