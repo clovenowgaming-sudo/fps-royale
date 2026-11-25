@@ -94,6 +94,10 @@ class FPSGame : ApplicationAdapter() {
         loadSfx()
 
         Gdx.input.inputProcessor = null // input ditangani manual lewat polling di render(), lebih gampang buat multi-touch custom
+
+        // TODO: ganti dengan menu utama (pilih Offline/Online) kalau sudah dibikin.
+        // Untuk sekarang match offline langsung auto-start biar begitu buka app, langsung main.
+        startOfflineBattleRoyale()
     }
 
     private fun loadGunAssets() {
