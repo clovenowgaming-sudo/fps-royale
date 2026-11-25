@@ -57,7 +57,7 @@ dependencies {
     implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
     implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
     // glTF / GLB runtime loader + PBR shaders for libGDX
-    implementation "com.github.mgsx-dev:gdx-gltf:$gdxGltfVersion"
+    implementation "com.github.mgsx-dev.gdx-gltf:gltf:$gdxGltfVersion"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.23"
 }
