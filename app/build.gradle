@@ -12,7 +12,6 @@ android {
         versionCode 1
         versionName "1.0"
         ndk {
-            // no native code needed; libGDX ships prebuilt natives for these ABIs
             abiFilters "armeabi-v7a", "arm64-v8a"
         }
     }
@@ -51,13 +50,45 @@ android {
 def gdxVersion = "1.12.1"
 def gdxGltfVersion = "2.2.1"
 
+configurations { natives }
+
 dependencies {
     implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
     implementation "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
-    implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
-    implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
+    natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
+    natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
     // glTF / GLB runtime loader + PBR shaders for libGDX
     implementation "com.github.mgsx-dev.gdx-gltf:gltf:$gdxGltfVersion"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.23"
 }
+
+// --- Resep resmi libGDX: ekstrak .so dari jar "natives" ke jniLibs sebelum build ---
+// Kalau ini dilewatkan (cuma pakai "implementation" biasa buat gdx-platform),
+// APK bisa kebangun TANPA libgdx.so di dalamnya -> crash UnsatisfiedLinkError pas app dibuka.
+task copyAndroidNatives {
+    doFirst {
+        file("src/main/jniLibs/armeabi-v7a/").mkdirs()
+        file("src/main/jniLibs/arm64-v8a/").mkdirs()
+
+        configurations.natives.copy().files.each { jar ->
+            def outputDir = null
+            if (jar.name.endsWith("natives-armeabi-v7a.jar")) outputDir = file("src/main/jniLibs/armeabi-v7a")
+            if (jar.name.endsWith("natives-arm64-v8a.jar")) outputDir = file("src/main/jniLibs/arm64-v8a")
+            if (outputDir != null) {
+                copy {
+                    from zipTree(jar)
+                    into outputDir
+                    include "*.so"
+                }
+            }
+        }
+    }
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name.contains("package")) {
+        task.dependsOn 'copyAndroidNatives'
+    }
+}
+preBuild.dependsOn copyAndroidNatives
