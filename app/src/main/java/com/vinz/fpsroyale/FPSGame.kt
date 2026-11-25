@@ -27,6 +27,8 @@ import net.mgsx.gltf.scene3d.lights.DirectionalLightEx
 import net.mgsx.gltf.scene3d.scene.Scene
 import net.mgsx.gltf.scene3d.scene.SceneAsset
 import net.mgsx.gltf.scene3d.scene.SceneManager
+import net.mgsx.gltf.scene3d.shaders.PBRShaderProvider
+import net.mgsx.gltf.scene3d.shaders.PBRDepthShaderProvider
 import kotlin.random.Random
 
 /** Mode yang bisa dipilih dari menu utama. */
@@ -71,7 +73,15 @@ class FPSGame : ApplicationAdapter() {
             far = 500f
         }
 
-        sceneManager = SceneManager()
+        val shaderConfig = PBRShaderProvider.createDefaultConfig().apply {
+            numBones = 60 // model KayKit butuh 41 tulang, kasih margin ke 60
+            numDirectionalLights = 1
+            numPointLights = 0
+        }
+        val depthShaderConfig = PBRShaderProvider.createDefaultDepthConfig().apply {
+            numBones = 60
+        }
+        sceneManager = SceneManager(PBRShaderProvider(shaderConfig), PBRDepthShaderProvider(depthShaderConfig))
         sceneManager.setCamera(camera)
         val light = DirectionalLightEx().apply {
             direction.set(-1f, -0.8f, -0.4f).nor()
