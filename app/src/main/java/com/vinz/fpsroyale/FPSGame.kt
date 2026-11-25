@@ -221,8 +221,8 @@ class FPSGame : ApplicationAdapter() {
                 }
             }
         }
-        if (!Gdx.input.isTouched(moveTouchId)) moveTouchId = -1
-        if (!Gdx.input.isTouched(lookTouchId)) lookTouchId = -1
+        if (moveTouchId != -1 && !Gdx.input.isTouched(moveTouchId)) moveTouchId = -1
+        if (lookTouchId != -1 && !Gdx.input.isTouched(lookTouchId)) lookTouchId = -1
 
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) jumpTap = true // debug keyboard (desktop/emulator)
 
